@@ -40,11 +40,16 @@ const Context = ({ props }) => {
   // list of assests page related data and functions
   const [listOfAssestsData, setListOfAssestsData] = useState({
     listOfAssestsArray: [],
+    listOfBasketsArray:[]
   });
 
   const updateListOfAssestsArray = (data) => {
     setListOfAssestsData({ ...listOfAssestsData, listOfAssestsArray: data });
   };
+
+  const updateListOfBasketsArray = (data) => {
+    setListOfAssestsData({... listOfAssestsData, listOfBasketsArray: data})
+  }
 
   // individual assest data and functions
   const [individualAssestData, setIndividualAssestData] = useState({
@@ -137,6 +142,7 @@ const Context = ({ props }) => {
         listOfAssestsContext: {
           listOfAssestsData,
           updateListOfAssestsArray,
+          updateListOfBasketsArray
         },
         individualAssestsContext: {
           individualAssestData,
