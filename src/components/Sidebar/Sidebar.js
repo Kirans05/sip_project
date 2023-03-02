@@ -134,6 +134,17 @@ const Sidebar = () => {
           {/* <AiOutlineGold className="text-xl" /> */}
           <h1 className="text-xl">Sumsub</h1>
         </div>
+        <div
+          className={
+            router.pathname == "/WebSdk"
+              ? "text-black hover:cursor-pointer bg-gray-400  rounded-lg p-1 flex items-center gap-x-2"
+              : "text-white hover:cursor-pointer p-1 flex items-center gap-x-2"
+          }
+          onClick={() => router.push("/WebSdk")}
+        >
+          {/* <AiOutlineGold className="text-xl" /> */}
+          <h1 className="text-xl">WebSdk</h1>
+        </div>
         {/* <div
           className={
             router.pathname == "/SafeGold"
