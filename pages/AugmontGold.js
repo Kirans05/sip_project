@@ -17,8 +17,38 @@ const AugmontGold = () => {
   const [metalDetails, setMetalDetails] = useState("");
   const [userPassbook, setUserPassbook] = useState("");
   const [passbookRerender, setPassbookRerender] = useState(true);
-  const [optionsSelected, setOptionSelected] = useState("buy")
-  const [metalSelected, setMetalSelected] = useState("gold")
+  const [optionsSelected, setOptionSelected] = useState("buy");
+  const [metalSelected, setMetalSelected] = useState("gold");
+
+  const [inputBoxValues, setInputBoxValues] = useState({
+    gramsBox: "",
+    amountBox: "",
+  });
+
+  const buyGoldThroughAmount = (amount) => {
+    let currentRate = Number(metalDetails.rates.gBuy);
+    let rateWithTax = (currentRate * 3) / 100 + currentRate;
+    let gramsQty = Number(amount) / rateWithTax;
+    gramsQty = gramsQty.toString().substring(0, 6);
+    return Number(gramsQty);
+  };
+
+  const inputBoxChangeHandler = (e, type) => {
+    if (metalSelected == "gold") {
+      if (type == "amount") {
+        setInputBoxValues({
+          ...inputBoxValues,
+          gramsBox: buyGoldThroughAmount(e.target.value),
+          amountBox: Number(e.target.value),
+        });
+      } else if (metalSelected == "silver") {
+      }
+    } else if (metalSelected == "silver") {
+      if (type == "amount") {
+      } else {
+      }
+    }
+  };
 
   const closeSignInModal = () => {
     setButtonClicked({ ...buttonClicked, signIn: !buttonClicked.signIn });
@@ -117,15 +147,16 @@ const AugmontGold = () => {
   const BuyGold = async () => {
     let data = new FormData();
     const merchantTransactionId = Math.random().toString(36).substring(2);
-    if (metalDetails != "") {
+    if(metalSelected == "gold"){
       data.append("lockPrice", metalDetails.rates.gBuy);
       data.append("metalType", "gold");
-      data.append("amount", "1000");
-      // data.append("quantity", "0.1");
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("blockId", metalDetails.blockId);
     }
+
+    data.append("amount", "1000");
+    // data.append("quantity", "0.1");
+    data.append("merchantTransactionId", merchantTransactionId);
+    data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+    data.append("blockId", metalDetails.blockId);
 
     let options = {
       url: "https://uat-api.augmontgold.com/api/merchant/v1/buy",
@@ -188,7 +219,7 @@ const AugmontGold = () => {
               />
             ) : null}
           </div>
-          <button onClick={fetchUserAddressList}>user Address List</button>
+          {/* <button onClick={fetchUserAddressList}>user Address List</button>
           <button
             onClick={() =>
               fetchUserPassbook(merchantId_AccessToken.accessToken)
@@ -208,7 +239,7 @@ const AugmontGold = () => {
             className="border-2 border-green-500 text-white bg-green-500"
           >
             BuyGold
-          </button>
+          </button> */}
 
           {/* user passbook and buy sell details */}
           <div className="flex flex-col gap-y-3">
@@ -230,14 +261,14 @@ const AugmontGold = () => {
             )}
 
             {metalDetails == "" ? null : (
-              <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-4 self-center items-center">
+              <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-6 self-center items-center">
                 {/* metal rates */}
                 <div className="flex justify-between w-1/3">
-                  <div className="flex flex-col gap-y-1 items-center">
+                  <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
                     <h1>Gold</h1>
                     <h1>{metalDetails.rates.gBuy}</h1>
                   </div>
-                  <div className="flex flex-col gap-y-1 items-center">
+                  <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
                     <h1>Silver</h1>
                     <h1>{metalDetails.rates.sBuy}</h1>
                   </div>
@@ -245,24 +276,91 @@ const AugmontGold = () => {
 
                 {/* buy sell options */}
                 <div className="flex justify-between w-1/3 ">
-                  <h1 className={optionsSelected == "buy" ? "border-b-2 border-slate-500 hover:cursor-pointer": "border-b-2 border-white hover:cursor-pointer"}
-                  onClick={() => setOptionSelected("buy")}
-                  >Buy</h1>
-                  <h1 className={optionsSelected == "sell" ? "border-b-2 border-slate-500 hover:cursor-pointer": "border-b-2 border-white hover:cursor-pointer"}
-                  onClick={() => setOptionSelected("sell")}
-                  >Sell</h1>
+                  <h1
+                    className={
+                      optionsSelected == "buy"
+                        ? "border-b-2 border-slate-500 hover:cursor-pointer font-semibold text-lg"
+                        : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg"
+                    }
+                    onClick={() => setOptionSelected("buy")}
+                  >
+                    Buy
+                  </h1>
+                  <h1
+                    className={
+                      optionsSelected == "sell"
+                        ? "border-b-2 border-slate-500 hover:cursor-pointer font-semibold text-lg"
+                        : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg"
+                    }
+                    onClick={() => setOptionSelected("sell")}
+                  >
+                    Sell
+                  </h1>
                 </div>
-
 
                 {/* type of metal */}
                 <div className="flex w-3/4 border-2 border-slate-600 justify-between p-1 rounded-lg">
-                    <h1 className={metalSelected == "gold" ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center": "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"}
+                  <h1
+                    className={
+                      metalSelected == "gold"
+                        ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center"
+                        : "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"
+                    }
                     onClick={() => setMetalSelected("gold")}
-                    >GOLD 24K 999</h1>
-                    <h1 className={metalSelected == "silver" ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center": "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"}
+                  >
+                    GOLD 24K 999
+                  </h1>
+                  <h1
+                    className={
+                      metalSelected == "silver"
+                        ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center"
+                        : "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"
+                    }
                     onClick={() => setMetalSelected("silver")}
-                    >SILVER 24K 999</h1>
+                  >
+                    SILVER 24K 999
+                  </h1>
                 </div>
+
+                {/* input box fo grams and amount */}
+                <div className="flex w-3/4 justify-between p-1">
+                  <input
+                    type={"number"}
+                    placeholder={"Grams"}
+                    className="w-1/3 border-2 border-slate-500 pl-3"
+                    value={inputBoxValues.gramsBox}
+                    onChange={(e) => inputBoxChangeHandler(e, "grams")}
+                  />
+                  <h1>{"-><-"}</h1>
+                  <input
+                    type={"number"}
+                    placeholder={"Amount"}
+                    className="w-1/3 border-2 border-slate-500 pl-3"
+                    value={inputBoxValues.amountBox}
+                    onChange={(e) => inputBoxChangeHandler(e, "amount")}
+                  />
+                </div>
+
+                {/* amount buttons like 500, 1000, 10000 */}
+                <div className="w-3/4 flex justify-between">
+                  <button className="bg-gray-200 text-black px-3 py-1">
+                    +500
+                  </button>
+                  <button className="bg-gray-200 text-black px-3 py-1">
+                    +1000
+                  </button>
+                  <button className="bg-gray-200 text-black px-3 py-1">
+                    +5000
+                  </button>
+                  <button className="bg-black text-white px-3 py-1 w-1/3">
+                    +10000
+                  </button>
+                </div>
+
+                {/* quick buy button */}
+                <button className="bg-red-500 text-white px-3 py-1 w-1/3 rounded-lg">
+                  Quick Buy
+                </button>
               </div>
             )}
           </div>
