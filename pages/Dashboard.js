@@ -127,6 +127,29 @@ const Dashboard = () => {
     } catch (err) {}
   };
 
+  const checkUserKycStatus = async (userId) => {
+    try {
+      let fetchResponse = await supabase
+        .from("profiles")
+        .select("sumsub_kyc_id, sumsub_kyc_status")
+        .eq("id", userId);
+
+      if (fetchResponse.error) {
+      }
+
+      if (fetchResponse.data[0].sumsub_kyc_status != "completed") {
+        router.push("/WebSdk");
+      }
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    checkUserKycStatus(
+      JSON.parse(localStorage.getItem("sb-ziaxsvytbaahgjrompdd-auth-token"))
+        .user.id
+    );
+  }, []);
+
   useEffect(() => {
     updateUserId(
       JSON.parse(localStorage.getItem("sb-ziaxsvytbaahgjrompdd-auth-token"))
