@@ -3,6 +3,7 @@ import Sidebar from "../src/components/Sidebar/Sidebar";
 import Header from "../src/components/Header/Header";
 import axios from "axios";
 import AugmontSignInModal from "../src/components/Modal/AugmontSignInModal";
+import AugmontProfileModal from "../src/components/Modal/AugmontProfileModal";
 
 const AugmontGold = () => {
   const [merchantId_AccessToken, setMerchantId_AccessToken] = useState({
@@ -12,6 +13,11 @@ const AugmontGold = () => {
 
   const [buttonClicked, setButtonClicked] = useState({
     signIn: false,
+    userAccount: false,
+    userProfile: false,
+    userKyc: false,
+    userOrders: false,
+    giftMetal: false,
   });
 
   const [metalDetails, setMetalDetails] = useState("");
@@ -22,6 +28,14 @@ const AugmontGold = () => {
   const [purchaseType, setPurchaseType] = useState("amount");
   const [sellType, setSellType] = useState("amount");
 
+  const profileBtnClicked = () => {
+    setButtonClicked({
+      ...buttonClicked,
+      userProfile: !buttonClicked.userProfile,
+      userAccount: false,
+    });
+  };
+
   const [inputBoxValues, setInputBoxValues] = useState({
     gramsBox: "",
     amountBox: "",
@@ -30,6 +44,12 @@ const AugmontGold = () => {
   const [sellInputBoxValues, setSellInputBoxValues] = useState({
     gramsBox: "",
     amountBox: "",
+  });
+
+  const [giftInputBoxValues, setGiftInputBoxValues] = useState({
+    gramsBox: "",
+    amountBox: "",
+    recipientNumber: "",
   });
 
   const [userBank, setUserBank] = useState({
@@ -164,6 +184,38 @@ const AugmontGold = () => {
       } else if (type == "grams") {
         setSellInputBoxValues({
           ...sellInputBoxValues,
+          gramsBox: Number(e.target.value),
+          amountBox: sellSilverThroughGrams(e.target.value),
+        });
+      }
+    }
+  };
+
+  const giftInputBoxChangeHandler = (e, type) => {
+    if (metalSelected == "gold") {
+      if (type == "amount") {
+        giftInputBoxValues({
+          ...giftInputBoxValues,
+          gramsBox: sellGoldThroughAmount(e.target.value),
+          amountBox: Number(e.target.value),
+        });
+      } else if (type == "grams") {
+        giftInputBoxValues({
+          ...giftInputBoxValues,
+          gramsBox: Number(e.target.value),
+          amountBox: sellGoldThroughGrams(e.target.value),
+        });
+      }
+    } else if (metalSelected == "silver") {
+      if (type == "amount") {
+        giftInputBoxValues({
+          ...giftInputBoxValues,
+          gramsBox: sellSilverThroughAmount(e.target.value),
+          amountBox: Number(e.target.value),
+        });
+      } else if (type == "grams") {
+        giftInputBoxValues({
+          ...giftInputBoxValues,
           gramsBox: Number(e.target.value),
           amountBox: sellSilverThroughGrams(e.target.value),
         });
@@ -347,9 +399,37 @@ const AugmontGold = () => {
       data.append("userBank[accountName]", userBank.accountName);
       data.append("userBank[accountNumber]", userBank.accountNumber);
       data.append("userBank[ifscCode]", userBank.ifscCode);
+    } else if (metalSelected == "gold" && sellType == "grams") {
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("lockPrice", metalDetails.rates.gSell);
+      data.append("blockId", metalDetails.blockId);
+      data.append("metalType", "gold");
+      data.append("quantity", sellInputBoxValues.gramsBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("userBank[accountName]", userBank.accountName);
+      data.append("userBank[accountNumber]", userBank.accountNumber);
+      data.append("userBank[ifscCode]", userBank.ifscCode);
+    } else if (metalSelected == "silver" && sellType == "amount") {
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("lockPrice", metalDetails.rates.sSell);
+      data.append("blockId", metalDetails.blockId);
+      data.append("metalType", "silver");
+      data.append("amount", sellInputBoxValues.amountBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("userBank[accountName]", userBank.accountName);
+      data.append("userBank[accountNumber]", userBank.accountNumber);
+      data.append("userBank[ifscCode]", userBank.ifscCode);
+    } else if (metalSelected == "silver" && sellType == "grams") {
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("lockPrice", metalDetails.rates.sSell);
+      data.append("blockId", metalDetails.blockId);
+      data.append("metalType", "silver");
+      data.append("quantity", sellInputBoxValues.gramsBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("userBank[accountName]", userBank.accountName);
+      data.append("userBank[accountNumber]", userBank.accountNumber);
+      data.append("userBank[ifscCode]", userBank.ifscCode);
     }
-    // data.append("quantity", "0.1");
-    // data.append("userBank[bankId]", "nXMbmVBA");
 
     let options = {
       url: "https://uat-api.augmontgold.com/api/merchant/v1/sell",
@@ -363,7 +443,47 @@ const AugmontGold = () => {
     try {
       let fetchResponse = await axios(options);
       console.log(fetchResponse);
-    } catch (err) {}
+      if (fetchResponse.status == 200) {
+        if (fetchResponse.data.statusCode == 200) {
+          // setPassbookRerender(!passbookRerender)
+          setUserPassbook({
+            ...userPassbook,
+            silverGrms: fetchResponse.data.result.data.silverBalance,
+            goldGrms: fetchResponse.data.result.data.goldBalance,
+          });
+        }
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const giftHandler = async () => {
+    const merchantTransactionId = Math.random().toString(36).substring(2);
+
+    var data = new FormData();
+    data.append("merchantTransactionId", merchantTransactionId);
+    data.append("sender[uniqueId]", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+    data.append("receiver[uniqueId]", giftInputBoxValues.recipientNumber);
+    data.append("metalType", "gold");
+    data.append("quantity", giftInputBoxValues.gramsBox);
+
+    let options = {
+      url:"https://uat-api.augmontgold.com/api/merchant/v1/transfer",
+      method:"POST",
+      headers:{
+        "content-type":"application/json",
+        "Authorization":`Bearer ${merchantId_AccessToken.accessToken}`
+      },
+      data:data
+    }
+
+    try{
+      let fetchResponse = await axios(options)
+      console.log(fetchResponse)
+    }catch(err){
+
+    }
   };
 
   useEffect(() => {
@@ -372,6 +492,7 @@ const AugmontGold = () => {
 
   // useEffect(() => {
   //   if (merchantId_AccessToken.accessToken != "") {
+  //     alert("hi")
   //     fetchUserPassbook(merchantId_AccessToken.accessToken);
   //   }
   // }, [passbookRerender]);
@@ -397,12 +518,52 @@ const AugmontGold = () => {
                 onClick={() =>
                   setButtonClicked({
                     ...buttonClicked,
+                    giftMetal: !buttonClicked.giftMetal,
+                  })
+                }
+              >
+                Gift
+              </h1>
+              <h1
+                className="text-xl font-semibold hover:cursor-pointer"
+                onClick={() =>
+                  setButtonClicked({
+                    ...buttonClicked,
                     signIn: !buttonClicked.signIn,
                   })
                 }
               >
                 Sign In
               </h1>
+              <h1
+                className="text-xl font-semibold hover:cursor-pointer"
+                onClick={() =>
+                  setButtonClicked({
+                    ...buttonClicked,
+                    userAccount: !buttonClicked.userAccount,
+                  })
+                }
+              >
+                User
+              </h1>
+              {buttonClicked.userAccount == false ? null : (
+                <div className="absolute z-10 -mr-2 mt-8 transform border-2 border-slate-400 w-fit px-2 py-2 bg-black text-white">
+                  <div className="rounded-lg">
+                    <div className="rounded-lg overflow-hidden">
+                      <div className="z-20 relative flex flex-col gap-y-2">
+                        <h1
+                          className="hover:cursor-pointer"
+                          onClick={profileBtnClicked}
+                        >
+                          My Profile
+                        </h1>
+                        <h1 className="hover:cursor-pointer">KYC</h1>
+                        <h1 className="hover:cursor-pointer">My Orders</h1>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             {buttonClicked.signIn ? (
               <AugmontSignInModal
@@ -410,6 +571,7 @@ const AugmontGold = () => {
                 merchantId_AccessToken={merchantId_AccessToken}
               />
             ) : null}
+            {buttonClicked.userProfile ? <AugmontProfileModal /> : null}
           </div>
 
           {/* user passbook and buy sell details */}
@@ -696,6 +858,75 @@ const AugmontGold = () => {
                 </button>
               </div>
             )}
+
+            {/* gift gold */}
+            <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-6 self-center items-center">
+              <h1>Gift Gold</h1>
+              <input
+                type={"text"}
+                placeholder={"Enter Mobile Number"}
+                className="w-1/3 border-2 border-slate-500 pl-3"
+                value={giftInputBoxValues.recipientNumber}
+                onChange={(e) =>
+                  setGiftInputBoxValues({
+                    ...giftInputBoxValues,
+                    recipientNumber: e.target.value,
+                  })
+                }
+              />
+              <div className="flex w-3/4 border-2 border-slate-600 justify-between p-1 rounded-lg">
+                <h1
+                  className={
+                    metalSelected == "gold"
+                      ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center"
+                      : "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"
+                  }
+                  onClick={() => metalChangeHandler("gold")}
+                >
+                  GOLD 24K 999
+                </h1>
+                <h1
+                  className={
+                    metalSelected == "silver"
+                      ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center"
+                      : "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"
+                  }
+                  onClick={() => metalChangeHandler("silver")}
+                >
+                  SILVER 24K 999
+                </h1>
+              </div>
+              <div className="flex w-3/4 justify-between p-1">
+                <input
+                  type={"number"}
+                  placeholder={"Grams"}
+                  className="w-1/3 border-2 border-slate-500 pl-3"
+                  value={giftInputBoxValues.gramsBox}
+                  onChange={(e) =>
+                    setGiftInputBoxValues({
+                      ...giftInputBoxValues,
+                      gramsBox: Number(e.target.value),
+                    })
+                  }
+                  onClick={() => setSellType("grams")}
+                />
+                {/* <h1>{"-><-"}</h1>
+                  <input
+                    type={"number"}
+                    placeholder={"Amount"}
+                    className="w-1/3 border-2 border-slate-500 pl-3"
+                    value={giftInputBoxValues.amountBox}
+                    onChange={(e) => giftInputBoxChangeHandler(e, "amount")}
+                    onClick={() => setSellType("amount")}
+                  /> */}
+              </div>
+              <button
+                className="bg-red-500 text-white px-3 py-1 w-1/3 rounded-lg"
+                onClick={giftHandler}
+              >
+                Send Gift
+              </button>
+            </div>
           </div>
         </div>
       </div>
