@@ -38,7 +38,7 @@ const Products = () => {
   return (
     <div className="w-full rounded-lg py-4 px-0 flex flex-col gap-y-6 self-center items-center">
       <h1>List Of Products</h1>
-      <div className="flex gap-y-5 w-full flex-wrap gap-x-2 justify-around">
+      <div className="flex gap-y-12 w-full flex-wrap gap-x-2 justify-around">
         {productList.map((item, index) => {
           return <IndividualProducts key={index} item={item} />;
         })}

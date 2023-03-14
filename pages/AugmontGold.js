@@ -8,6 +8,9 @@ import Products from "../src/components/AugmontGold/Products";
 import Passbook from "../src/components/AugmontGold/Passbook";
 import BuyGold_silverBox from "../src/components/AugmontGold/BuyGold_silverBox";
 import { MainUseContext } from "../src/context/MainUseContext";
+import SellGold_SilverBox from "../src/components/AugmontGold/SellGold_SilverBox";
+import GiftBox from "../src/components/AugmontGold/GiftBox";
+import SingleProductDesc from "../src/components/AugmontGold/SingleProductDesc";
 
 const AugmontGold = () => {
   const storeState = useContext(MainUseContext);
@@ -146,127 +149,6 @@ const AugmontGold = () => {
     } catch (err) {}
   };
 
-  const BuyMetalHandler = async () => {
-    let data = new FormData();
-    const merchantTransactionId = Math.random().toString(36).substring(2);
-    if (metalSelected == "gold" && purchaseType == "amount") {
-      data.append("lockPrice", metalDetails.rates.gBuy);
-      data.append("metalType", "gold");
-      data.append("amount", inputBoxValues.amountBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("blockId", metalDetails.blockId);
-    } else if (metalSelected == "gold" && purchaseType == "grams") {
-      data.append("lockPrice", metalDetails.rates.gBuy);
-      data.append("metalType", "gold");
-      data.append("quantity", inputBoxValues.gramsBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("blockId", metalDetails.blockId);
-    } else if (metalSelected == "silver" && purchaseType == "amount") {
-      data.append("lockPrice", metalDetails.rates.sBuy);
-      data.append("metalType", "silver");
-      data.append("amount", inputBoxValues.amountBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("blockId", metalDetails.blockId);
-    } else if (metalSelected == "silver" && purchaseType == "grams") {
-      data.append("lockPrice", metalDetails.rates.sBuy);
-      data.append("metalType", "silver");
-      data.append("quantity", inputBoxValues.gramsBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("blockId", metalDetails.blockId);
-    }
-
-    let options = {
-      url: "https://uat-api.augmontgold.com/api/merchant/v1/buy",
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${merchantId_AccessToken.accessToken}`,
-      },
-      data: data,
-    };
-    try {
-      let fetchResponse = await axios(options);
-      console.log(fetchResponse);
-    } catch (err) {}
-  };
-
-  const sellMetalHandler = async () => {
-    var data = new FormData();
-    const merchantTransactionId = Math.random().toString(36).substring(2);
-
-    if (metalSelected == "gold" && sellType == "amount") {
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("lockPrice", metalDetails.rates.gSell);
-      data.append("blockId", metalDetails.blockId);
-      data.append("metalType", "gold");
-      data.append("amount", sellInputBoxValues.amountBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("userBank[accountName]", userBank.accountName);
-      data.append("userBank[accountNumber]", userBank.accountNumber);
-      data.append("userBank[ifscCode]", userBank.ifscCode);
-    } else if (metalSelected == "gold" && sellType == "grams") {
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("lockPrice", metalDetails.rates.gSell);
-      data.append("blockId", metalDetails.blockId);
-      data.append("metalType", "gold");
-      data.append("quantity", sellInputBoxValues.gramsBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("userBank[accountName]", userBank.accountName);
-      data.append("userBank[accountNumber]", userBank.accountNumber);
-      data.append("userBank[ifscCode]", userBank.ifscCode);
-    } else if (metalSelected == "silver" && sellType == "amount") {
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("lockPrice", metalDetails.rates.sSell);
-      data.append("blockId", metalDetails.blockId);
-      data.append("metalType", "silver");
-      data.append("amount", sellInputBoxValues.amountBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("userBank[accountName]", userBank.accountName);
-      data.append("userBank[accountNumber]", userBank.accountNumber);
-      data.append("userBank[ifscCode]", userBank.ifscCode);
-    } else if (metalSelected == "silver" && sellType == "grams") {
-      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
-      data.append("lockPrice", metalDetails.rates.sSell);
-      data.append("blockId", metalDetails.blockId);
-      data.append("metalType", "silver");
-      data.append("quantity", sellInputBoxValues.gramsBox);
-      data.append("merchantTransactionId", merchantTransactionId);
-      data.append("userBank[accountName]", userBank.accountName);
-      data.append("userBank[accountNumber]", userBank.accountNumber);
-      data.append("userBank[ifscCode]", userBank.ifscCode);
-    }
-
-    let options = {
-      url: "https://uat-api.augmontgold.com/api/merchant/v1/sell",
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        Authorization: `Bearer ${merchantId_AccessToken.accessToken}`,
-      },
-      data: data,
-    };
-    try {
-      let fetchResponse = await axios(options);
-      console.log(fetchResponse);
-      if (fetchResponse.status == 200) {
-        if (fetchResponse.data.statusCode == 200) {
-          // setPassbookRerender(!passbookRerender)
-          setUserPassbook({
-            ...userPassbook,
-            silverGrms: fetchResponse.data.result.data.silverBalance,
-            goldGrms: fetchResponse.data.result.data.goldBalance,
-          });
-        }
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
   const giftHandler = async () => {
     const merchantTransactionId = Math.random().toString(36).substring(2);
 
@@ -325,9 +207,35 @@ const AugmontGold = () => {
               <h1
                 className="text-xl font-semibold hover:cursor-pointer"
                 onClick={() =>
-                  setButtonClicked({
-                    ...buttonClicked,
-                    giftMetal: !buttonClicked.giftMetal,
+                  setVariousOptions({
+                    ...variousOptions,
+                    page: "buy page",
+                    optionsSelected: "buy",
+                  })
+                }
+              >
+                Buy
+              </h1>
+              {/* sell */}
+              <h1
+                className="text-xl font-semibold hover:cursor-pointer"
+                onClick={() =>
+                  setVariousOptions({
+                    ...variousOptions,
+                    page: "sell page",
+                    optionsSelected: "sell",
+                  })
+                }
+              >
+                Sell
+              </h1>
+              {/* gift */}
+              <h1
+                className="text-xl font-semibold hover:cursor-pointer"
+                onClick={() =>
+                  setVariousOptions({
+                    ...variousOptions,
+                    page: "gift page",
                   })
                 }
               >
@@ -341,12 +249,6 @@ const AugmontGold = () => {
                     page: "products page",
                   })
                 }
-                // onClick={() =>
-                //   setButtonClicked({
-                //     ...buttonClicked,
-                //     products: !buttonClicked.products,
-                //   })
-                // }
               >
                 Products
               </h1>
@@ -403,235 +305,21 @@ const AugmontGold = () => {
           {/* user passbook and buy sell details */}
           <div className="flex flex-col gap-y-10">
             {/* user passbook */}
-            {userPassbook == "" ? null : (
-              <Passbook userPassbook={userPassbook} />
-            )}
+            {userPassbook == "" ? null : <Passbook />}
 
-            {/* products list */}
-            {/* {buttonClicked.products == false ? null : (
-              <Products accessToken={merchantId_AccessToken.accessToken} />
-            )} */}
-
-            {
-              variousOptions.page == "" ? <h1>No Page</h1>
-              : variousOptions.page == "products page" ? <Products />
-              : <h1>other pages</h1>
-            }
-
-            {/* {metalDetails == "" ? null : optionsSelected == "buy" ? (
-              <BuyGold_silverBox
-                metalDetails={metalDetails}
-                setOptionSelected={setOptionSelected}
-                metalChangeHandler={metalChangeHandler}
-                setPurchaseType={setPurchaseType}
-                inputBoxChangeHandler={inputBoxChangeHandler}
-                differentAmountButtonHandler={differentAmountButtonHandler}
-                BuyMetalHandler={BuyMetalHandler}
-                optionsSelected={optionsSelected}
-              />
-            ) : (
-              <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-6 self-center items-center"> */}
-            {/* metal rates */}
-            {/* <div className="flex justify-between w-1/3">
-                  <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
-                    <h1>Gold</h1>
-                    <h1>{metalDetails.rates.gSell} /gm</h1>
-                  </div>
-                  <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
-                    <h1>Silver</h1>
-                    <h1>{metalDetails.rates.sSell} /gm</h1>
-                  </div>
-                </div> */}
-
-            {/* buy sell options */}
-            {/* <div className="flex justify-between w-1/3 ">
-                  <h1
-                    className={
-                      optionsSelected == "buy"
-                        ? "border-b-2 border-red-500 hover:cursor-pointer font-semibold text-lg text-red-500"
-                        : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg text-red-500"
-                    }
-                    onClick={() => setOptionSelected("buy")}
-                  >
-                    Buy
-                  </h1>
-                  <h1
-                    className={
-                      optionsSelected == "sell"
-                        ? "border-b-2 border-red-500 hover:cursor-pointer font-semibold text-lg text-red-500"
-                        : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg text-red-500"
-                    }
-                    onClick={() => setOptionSelected("sell")}
-                  >
-                    Sell
-                  </h1>
-                </div> */}
-
-            {/* type of metal */}
-            {/* <div className="flex w-3/4 border-2 border-slate-600 justify-between p-1 rounded-lg">
-                  <h1
-                    className={
-                      metalSelected == "gold"
-                        ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center"
-                        : "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"
-                    }
-                    onClick={() => metalChangeHandler("gold")}
-                  >
-                    GOLD 24K 999
-                  </h1>
-                  <h1
-                    className={
-                      metalSelected == "silver"
-                        ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center"
-                        : "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"
-                    }
-                    onClick={() => metalChangeHandler("silver")}
-                  >
-                    SILVER 24K 999
-                  </h1>
-                </div> */}
-
-            {/* input box fo grams and amount */}
-            {/* <div className="flex w-3/4 justify-between p-1">
-                  <input
-                    type={"number"}
-                    placeholder={"Grams"}
-                    className="w-1/3 border-2 border-slate-500 pl-3"
-                    value={sellInputBoxValues.gramsBox}
-                    onChange={(e) => sellInputBoxChangeHandler(e, "grams")}
-                    onClick={() => setSellType("grams")}
-                  />
-                  <h1>{"-><-"}</h1>
-                  <input
-                    type={"number"}
-                    placeholder={"Amount"}
-                    className="w-1/3 border-2 border-slate-500 pl-3"
-                    value={sellInputBoxValues.amountBox}
-                    onChange={(e) => sellInputBoxChangeHandler(e, "amount")}
-                    onClick={() => setSellType("amount")}
-                  />
-                </div> */}
-
-            {/* bank details section */}
-            {/* <div className="w-1/2 p-2 flex flex-col gap-y-3">
-                  <h1 className="text-center">
-                    Enter Bank Details For Money Transfer
-                  </h1>
-                  <div className="flex flex-col gap-y-2">
-                    <h1>Enter Account Name</h1>
-                    <input
-                      type={"text"}
-                      placeholder={"Enter Account Name"}
-                      className="border-2 pl-2 py-1 border-slate-400"
-                      value={userBank.accountName}
-                      onChange={(e) =>
-                        setUserBank({
-                          ...userBank,
-                          accountName: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <h1>Enter Account Number</h1>
-                    <input
-                      type={"number"}
-                      placeholder={"Enter Account Number"}
-                      className="border-2 pl-2 py-1 border-slate-400"
-                      value={userBank.accountNumber}
-                      onChange={(e) =>
-                        setUserBank({
-                          ...userBank,
-                          accountNumber: Number(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="flex flex-col gap-y-2">
-                    <h1>Enter IFSC Code</h1>
-                    <input
-                      type={"text"}
-                      placeholder={"Enter IFSC Code"}
-                      className="border-2 pl-2 py-1 border-slate-400"
-                      value={userBank.ifscCode}
-                      onChange={(e) =>
-                        setUserBank({ ...userBank, ifscCode: e.target.value })
-                      }
-                    />
-                  </div>
-                </div> */}
-
-            {/* quick Sell button */}
-            {/* <button
-                  className="bg-red-500 text-white px-3 py-1 w-1/3 rounded-lg"
-                  onClick={sellMetalHandler}
-                >
-                  Quick Sell
-                </button> */}
-            {/* </div>
-            )} */}
-
-            {/* gift gold */}
-            {/* <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-6 self-center items-center">
-              <h1>Gift Gold</h1>
-              <input
-                type={"text"}
-                placeholder={"Enter Mobile Number"}
-                className="w-1/3 border-2 border-slate-500 pl-3"
-                value={giftInputBoxValues.recipientNumber}
-                onChange={(e) =>
-                  setGiftInputBoxValues({
-                    ...giftInputBoxValues,
-                    recipientNumber: e.target.value,
-                  })
-                }
-              />
-              <div className="flex w-3/4 border-2 border-slate-600 justify-between p-1 rounded-lg">
-                <h1
-                  className={
-                    metalSelected == "gold"
-                      ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center"
-                      : "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"
-                  }
-                  onClick={() => metalChangeHandler("gold")}
-                >
-                  GOLD 24K 999
-                </h1>
-                <h1
-                  className={
-                    metalSelected == "silver"
-                      ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center"
-                      : "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"
-                  }
-                  onClick={() => metalChangeHandler("silver")}
-                >
-                  SILVER 24K 999
-                </h1>
-              </div>
-              <div className="flex w-3/4 justify-between p-1">
-                <input
-                  type={"number"}
-                  placeholder={"Grams"}
-                  className="w-1/3 border-2 border-slate-500 pl-3"
-                  value={giftInputBoxValues.gramsBox}
-                  onChange={(e) =>
-                    setGiftInputBoxValues({
-                      ...giftInputBoxValues,
-                      gramsBox: Number(e.target.value),
-                    })
-                  }
-                  onClick={() => setSellType("grams")}
-                />
-              </div>
-              <button
-                className="bg-red-500 text-white px-3 py-1 w-1/3 rounded-lg"
-                onClick={giftHandler}
-              >
-                Send Gift
-              </button>
-            </div> */}
+            {variousOptions.page == "" ? null : variousOptions.page ==
+              "products page" ? (
+              <Products />
+            ) : variousOptions.page == "buy page" ? (
+              <BuyGold_silverBox />
+            ) : variousOptions.page == "sell page" ? (
+              <SellGold_SilverBox />
+            ) : variousOptions.page == "gift page" ? (
+              <GiftBox />
+            ) : variousOptions.page == "single product details" ? (
+              <SingleProductDesc />
+            ) : null}
           </div>
-          <h1>Augmont</h1>
         </div>
       </div>
     </div>
@@ -639,3 +327,44 @@ const AugmontGold = () => {
 };
 
 export default AugmontGold;
+
+// let {
+//   merchantId_AccessToken,
+//   setMerchantId_AccessToken,
+//   buttonClicked,
+//   giftInputBoxValues,
+//   inputBoxValues,
+//   metalDetails,
+//   passbookRerender,
+//   sellInputBoxValues,
+//   setButtonClicked,
+//   setGiftInputBoxValues,
+//   setInputBoxValues,
+//   setMetalDetails,
+//   setPassbookRerender,
+//   setSellInputBoxValues,
+//   setUserBank,
+//   setUserPassbook,
+//   setVariousOptions,
+//   userBank,
+//   userPassbook,
+//   variousOptions,
+// } = augmontGoldContext.augmontGoldData;
+
+// let {
+//   buyGoldThroughAmount,
+//   buyGoldThroughGrams,
+//   buySilverThroughAmount,
+//   buySilverThroughGrams,
+//   closeSignInModal,
+//   differentAmountButtonHandler,
+//   giftInputBoxChangeHandler,
+//   inputBoxChangeHandler,
+//   metalChangeHandler,
+//   profileBtnClicked,
+//   sellGoldThroughAmount,
+//   sellGoldThroughGrams,
+//   sellInputBoxChangeHandler,
+//   sellSilverThroughAmount,
+//   sellSilverThroughGrams,
+// } = augmontGoldContext;

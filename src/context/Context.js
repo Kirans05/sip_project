@@ -159,8 +159,10 @@ const Context = ({ props }) => {
     metalSelected: "gold",
     purchaseType: "amount",
     sellType: "amount",
-    page:""
+    page:"",
+    deliverProductId:""
   });
+  const [deliverProdDetails, setDeliverProdDetails] = useState("")
   const [inputBoxValues, setInputBoxValues] = useState({
     gramsBox: "",
     amountBox: "",
@@ -224,7 +226,7 @@ const Context = ({ props }) => {
   };
 
   const inputBoxChangeHandler = (e, type) => {
-    if (metalSelected == "gold") {
+    if (variousOptions.metalSelected == "gold") {
       if (type == "amount") {
         setInputBoxValues({
           ...inputBoxValues,
@@ -238,7 +240,7 @@ const Context = ({ props }) => {
           gramsBox: Number(e.target.value),
         });
       }
-    } else if (metalSelected == "silver") {
+    } else if (variousOptions.metalSelected == "silver") {
       if (type == "amount") {
         setInputBoxValues({
           ...inputBoxValues,
@@ -290,7 +292,7 @@ const Context = ({ props }) => {
   };
 
   const sellInputBoxChangeHandler = (e, type) => {
-    if (metalSelected == "gold") {
+    if (variousOptions.metalSelected == "gold") {
       if (type == "amount") {
         setSellInputBoxValues({
           ...sellInputBoxValues,
@@ -304,7 +306,7 @@ const Context = ({ props }) => {
           amountBox: sellGoldThroughGrams(e.target.value),
         });
       }
-    } else if (metalSelected == "silver") {
+    } else if (variousOptions.metalSelected == "silver") {
       if (type == "amount") {
         setSellInputBoxValues({
           ...sellInputBoxValues,
@@ -322,7 +324,7 @@ const Context = ({ props }) => {
   };
 
   const giftInputBoxChangeHandler = (e, type) => {
-    if (metalSelected == "gold") {
+    if (variousOptions.metalSelected == "gold") {
       if (type == "amount") {
         giftInputBoxValues({
           ...giftInputBoxValues,
@@ -336,7 +338,7 @@ const Context = ({ props }) => {
           amountBox: sellGoldThroughGrams(e.target.value),
         });
       }
-    } else if (metalSelected == "silver") {
+    } else if (variousOptions.metalSelected == "silver") {
       if (type == "amount") {
         giftInputBoxValues({
           ...giftInputBoxValues,
@@ -362,7 +364,8 @@ const Context = ({ props }) => {
   };
 
   const metalChangeHandler = (type) => {
-    setMetalSelected(type);
+    setVariousOptions({...variousOptions, metalSelected: type})
+    // setMetalSelected(type);
     setInputBoxValues({
       gramsBox: "",
       amountBox: "",
@@ -438,6 +441,8 @@ const Context = ({ props }) => {
             setGiftInputBoxValues,
             userBank, 
             setUserBank,
+            setDeliverProdDetails,
+            deliverProdDetails
           },
           profileBtnClicked,
           buyGoldThroughAmount,

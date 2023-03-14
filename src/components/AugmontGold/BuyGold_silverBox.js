@@ -1,39 +1,140 @@
-import React from "react";
+import axios from "axios";
+import React, { useContext } from "react";
+import { MainUseContext } from "../../context/MainUseContext";
 
-const BuyGold_silverBox = ({metalDetails, setOptionSelected, metalChangeHandler, setPurchaseType, inputBoxChangeHandler, differentAmountButtonHandler, BuyMetalHandler, optionsSelected, metalSelected}) => {
+const BuyGold_silverBox = () => {
+  const storeState = useContext(MainUseContext);
+  let { augmontGoldContext } = storeState;
+  let {
+    inputBoxValues,
+    metalDetails,
+    setVariousOptions,
+    variousOptions,
+    merchantId_AccessToken,
+    userPassbook,
+    setUserPassbook,
+    setInputBoxValues
+  } = augmontGoldContext.augmontGoldData;
+
+  let { differentAmountButtonHandler, inputBoxChangeHandler } =
+    augmontGoldContext;
+
+  const BuyMetalHandler = async () => {
+    let data = new FormData();
+    const merchantTransactionId = Math.random().toString(36).substring(2);
+    if (
+      variousOptions.metalSelected == "gold" &&
+      variousOptions.purchaseType == "amount"
+    ) {
+      data.append("lockPrice", metalDetails.rates.gBuy);
+      data.append("metalType", "gold");
+      data.append("amount", inputBoxValues.amountBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("blockId", metalDetails.blockId);
+    } else if (
+      variousOptions.metalSelected == "gold" &&
+      variousOptions.purchaseType == "grams"
+    ) {
+      data.append("lockPrice", metalDetails.rates.gBuy);
+      data.append("metalType", "gold");
+      data.append("quantity", inputBoxValues.gramsBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("blockId", metalDetails.blockId);
+    } else if (
+      variousOptions.metalSelected == "silver" &&
+      variousOptions.purchaseType == "amount"
+    ) {
+      data.append("lockPrice", metalDetails.rates.sBuy);
+      data.append("metalType", "silver");
+      data.append("amount", inputBoxValues.amountBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("blockId", metalDetails.blockId);
+    } else if (
+      variousOptions.metalSelected == "silver" &&
+      variousOptions.purchaseType == "grams"
+    ) {
+      data.append("lockPrice", metalDetails.rates.sBuy);
+      data.append("metalType", "silver");
+      data.append("quantity", inputBoxValues.gramsBox);
+      data.append("merchantTransactionId", merchantTransactionId);
+      data.append("uniqueId", "17a8937e-ec5f-41bc-a1e2-f18e9dd7a664");
+      data.append("blockId", metalDetails.blockId);
+    }
+
+    let options = {
+      url: "https://uat-api.augmontgold.com/api/merchant/v1/buy",
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        Authorization: `Bearer ${merchantId_AccessToken.accessToken}`,
+      },
+      data: data,
+    };
+    try {
+      let fetchResponse = await axios(options);
+      if (fetchResponse.status == 200) {
+        if (fetchResponse.data.statusCode == 200) {
+          alert(fetchResponse.data.message);
+          setUserPassbook({
+            goldGrms: fetchResponse.data.result.data.goldBalance,
+            silverGrms: fetchResponse.data.result.data.silverBalance,
+          });
+        }
+      }
+    } catch (err) {}
+  };
+
+
+  const metalChangeHandler = (type) => {
+    setVariousOptions({ ...variousOptions, metalSelected: type })
+    setInputBoxValues({
+      gramsBox: "",
+      amountBox: "",
+    })
+  }
+
   return (
     <div className="w-3/4 border-2 border-slate-500 rounded-lg p-2 flex flex-col gap-y-6 self-center items-center">
       {/* metal rates */}
-      <div className="flex justify-between w-1/3">
-        <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
-          <h1>Gold</h1>
-          <h1>{metalDetails.rates.gBuy} /gm</h1>
+      {metalDetails == "" ? null : (
+        <div className="flex justify-between w-1/3">
+          <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
+            <h1>Gold</h1>
+            <h1>{metalDetails.rates.gBuy} /gm</h1>
+          </div>
+          <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
+            <h1>Silver</h1>
+            <h1>{metalDetails.rates.sBuy} /gm</h1>
+          </div>
         </div>
-        <div className="flex flex-col gap-y-0 items-center font-bold text-lg">
-          <h1>Silver</h1>
-          <h1>{metalDetails.rates.sBuy} /gm</h1>
-        </div>
-      </div>
+      )}
 
       {/* buy sell options */}
       <div className="flex justify-between w-1/3 ">
         <h1
           className={
-            optionsSelected == "buy"
+            variousOptions.optionsSelected == "buy"
               ? "border-b-2 border-red-500 hover:cursor-pointer font-semibold text-lg text-red-500"
               : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg text-red-500"
           }
-          onClick={() => setOptionSelected("buy")}
+          onClick={() =>
+            setVariousOptions({ ...variousOptions, optionsSelected: "buy", page: "buy page" })
+          }
         >
           Buy
         </h1>
         <h1
           className={
-            optionsSelected == "sell"
+            variousOptions.optionsSelected == "sell"
               ? "border-b-2 border-red-500 hover:cursor-pointer font-semibold text-lg text-red-500"
               : "border-b-2 border-white hover:cursor-pointer font-semibold text-lg text-red-500"
           }
-          onClick={() => setOptionSelected("sell")}
+          onClick={() =>
+            setVariousOptions({ ...variousOptions, optionsSelected: "sell", page: "sell page" })
+          }
         >
           Sell
         </h1>
@@ -43,21 +144,25 @@ const BuyGold_silverBox = ({metalDetails, setOptionSelected, metalChangeHandler,
       <div className="flex w-3/4 border-2 border-slate-600 justify-between p-1 rounded-lg">
         <h1
           className={
-            metalSelected == "gold"
+            variousOptions.metalSelected == "gold"
               ? "bg-red-500 text-white p-2 w-1/2 hover:cursor-pointer text-center"
               : "text-red bg-white hover:cursor-pointer p-2 w-1/2 text-center"
           }
-          onClick={() => metalChangeHandler("gold")}
+          onClick={() =>
+            metalChangeHandler("gold")
+          }
         >
           GOLD 24K 999
         </h1>
         <h1
           className={
-            metalSelected == "silver"
+            variousOptions.metalSelected == "silver"
               ? "bg-red-500 text-white hover:cursor-pointer p-2 w-1/2 text-center"
               : "text-red-500 bg-white hover:cursor-pointer p-2 w-1/2 text-center"
           }
-          onClick={() => metalChangeHandler("silver")}
+          onClick={() =>
+            metalChangeHandler("silver")
+          }
         >
           SILVER 24K 999
         </h1>
@@ -71,7 +176,9 @@ const BuyGold_silverBox = ({metalDetails, setOptionSelected, metalChangeHandler,
           className="w-1/3 border-2 border-slate-500 pl-3"
           value={inputBoxValues.gramsBox}
           onChange={(e) => inputBoxChangeHandler(e, "grams")}
-          onClick={() => setPurchaseType("grams")}
+          onClick={() =>
+            setVariousOptions({ ...variousOptions, purchaseType: "grams" })
+          }
         />
         <h1>{"-><-"}</h1>
         <input
@@ -80,7 +187,9 @@ const BuyGold_silverBox = ({metalDetails, setOptionSelected, metalChangeHandler,
           className="w-1/3 border-2 border-slate-500 pl-3"
           value={inputBoxValues.amountBox}
           onChange={(e) => inputBoxChangeHandler(e, "amount")}
-          onClick={() => setPurchaseType("amount")}
+          onClick={() =>
+            setVariousOptions({ ...variousOptions, purchaseType: "amount" })
+          }
         />
       </div>
 
